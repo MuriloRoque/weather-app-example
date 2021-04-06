@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux';
+import fetchData from './actions';
+import React from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      city: '',
+    }
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange({ target }) {
+    const { name, value } = target;
+    this.setState({
+      [name]: value,
+    })
+  }
+
+  render() {
+    const { getWeatherData, image, temperature } = this.props;
+    const { city } = this.state;
+    return (
+      <div>
+        <h1>Clima Trybe</h1>
+        <label htmlFor="city">Informe a cidade:
+          <input name="city" onChange={ this.handleChange } id="city" type="text"/>
+        </label>
+        <button onClick={ () => getWeatherData(city) }>Enviar</button>
+        <img src={ image } alt="clima"/>
+        <strong>{ temperature }</strong>
+      </div>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  image: state.weather.image,
+  temperature: state.weather.temperature,
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  getWeatherData: (city) => dispatch(fetchData(city)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
